@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':Cards-UI', ':Silk'
