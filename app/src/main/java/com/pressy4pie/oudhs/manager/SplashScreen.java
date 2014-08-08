@@ -64,6 +64,7 @@ public class SplashScreen extends Activity {
             protected Void doInBackground(Void... arg0) {
                 //download a list of devices
 
+                //hope we can put this on oudhs server...
                 downloadFiles("http://pressy4pie.com.com/devices/devices.txt", "devices.txt");
                 //download the md5 files for that device
                 Log.d("Device Check", "Checking Device: " + device);
@@ -75,64 +76,6 @@ public class SplashScreen extends Activity {
                     Log.d("Device Check", device + " not found in devices.txt");
 
                 }
-
-                String recoveryUpdate_md5 = root_tools.readLine(md5File, 1);
-//                Log.d("recoveryUpdate_md5: ", recoveryUpdate_md5);
-
-                //String recoveryUpdate_md5 = "bb25826589694a45e13b75561b2d5647";
-                //String saferootUpdate_md5 = "6a6b725846577e9955db8608c957216b";
-
-                /*
-                if(root_tools.fileExists(recovery)) {
-                    Log.i(tagname, "recovery.zip was found.");
-                    String checkrecovery = root_tools.checkSum(recovery);
-                    Log.d("checksum", "recovery checksum: " + "'" + checkrecovery + "'");
-                    Log.d("checksum", "checking against: " + "'" + recoveryUpdate_md5 + "'");
-
-                    //check for updates
-                    if (!checkrecovery.equals(recoveryUpdate_md5)) {
-                        Log.i(tagname, "an update was found. Downloading new recovery.zip");
-                        root_tools.execute("busybox rm " + recovery);
-                        download("recovery");
-                    }
-                }
-
-                //download recovery.zip if it doesnt exist
-                else {
-                    download("recovery");
-                }
-
-                if(root_tools.fileExists(saferoot)) {
-                    Log.i(tagname, "saferoot.zip was found.");
-                    String checksaferoot = root_tools.checkSum(saferoot);
-                    Log.d("checksum", "saferoot checksum: " + checksaferoot);
-                    Log.d("checksum", "checking against: " + saferootUpdate_md5 );
-
-                    //check for updates
-                    if (!checksaferoot.equals(saferootUpdate_md5)) {
-                        Log.i(tagname, "An update was found. Downloading new saferoot.zip");
-                        root_tools.execute("busybox rm " + saferoot);
-                        download("saferoot");
-                    }
-                }
-                //downlaod saferoot.zip if it doesnt exist
-                else {
-                    download("saferoot");
-                }
-
-
-                if(root_tools.fileExists(SDhacks)) {
-                    Log.i(tagname, "SDhacks.zip was found.");
-                    //no updates for this. idgaf about it anymore
-                }
-
-                //downlaod SDhacks.zip if it doesnt exist
-                else {
-                    download("SDhacks");
-                }
-*/
-
-
                 return null;
             }
 
