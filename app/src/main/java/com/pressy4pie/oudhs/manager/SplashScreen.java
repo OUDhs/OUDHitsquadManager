@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class SplashScreen extends Activity {
-    String device = root_tools.readProp("ro.product.board");
+    String device = root_tools.readProp("ro.product.name");
     String md5File = Environment.getExternalStorageDirectory() + "/md5.txt";
     String deviceFile = Environment.getExternalStorageDirectory() + "/devices.txt";
 
@@ -36,7 +36,7 @@ public class SplashScreen extends Activity {
         new PrefetchData().execute();
     }
 
-    //check to see if the devices ro.product.board is in devices
+    //check to see if the devices ro.product.name is in devices
     public boolean is_in_devices(){
         boolean is = false;
         Scanner input = new Scanner (deviceFile);
