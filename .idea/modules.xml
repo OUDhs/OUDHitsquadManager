@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Cards-UI/Cards-UI.iml" filepath="$PROJECT_DIR$/Cards-UI/Cards-UI.iml" />
       <module fileurl="file://$PROJECT_DIR$/OUDHSManager.iml" filepath="$PROJECT_DIR$/OUDHSManager.iml" />
       <module fileurl="file://$PROJECT_DIR$/OUDHitsquadManager.iml" filepath="$PROJECT_DIR$/OUDHitsquadManager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Silk/Silk.iml" filepath="$PROJECT_DIR$/Silk/Silk.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
