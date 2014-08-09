@@ -29,6 +29,10 @@ Class with useful tools for a root environment
 */
 
 public class root_tools {
+
+    public static String DeviceName() {
+    return readProp("ro.product.device");
+    }
     /*
 	 * executes a command as super user in an interactive shell
 	 */
@@ -204,6 +208,8 @@ public class root_tools {
         }
         return line;
     }
+
+
 }
 
 

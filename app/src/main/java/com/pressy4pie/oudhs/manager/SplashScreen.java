@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class SplashScreen extends Activity {
-    String device = root_tools.readProp("ro.product.name");
+    String device = root_tools.DeviceName();
     String md5File = Environment.getExternalStorageDirectory() + "/md5.txt";
     String deviceFile = Environment.getExternalStorageDirectory() + "/devices.txt";
 
