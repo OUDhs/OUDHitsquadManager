@@ -29,8 +29,10 @@ public class RecoveryInstallerActivity extends Activity {
     public String working_dir = sdCard + "/OudHSManager/downloads";
     //this is so dirty your parents will ground you for a week
     public String working_dir_sh = "/sdcard/OudHSManager/downloads";
-    public boolean backup = false;
     public String device = root_tools.DeviceName();
+
+    //1 = cwm. 2 = stock
+    public int choose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,9 @@ public class RecoveryInstallerActivity extends Activity {
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
-                    new PrefetchData().execute();
                     Log.d("Recovery Install", "Starting download and install");
+                    choose = 1;
+                    new PrefetchData().execute();
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
@@ -66,6 +69,31 @@ public class RecoveryInstallerActivity extends Activity {
         AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
         prompt.setMessage("Ok to download and install recovery for device: " + device).setPositiveButton("Yes", recoveryprompt)
                 .setNegativeButton("No", recoveryprompt).show();
+    }
+
+    DialogInterface.OnClickListener stockprompt = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    Log.d("Recovery Install", "Starting download and install");
+                    choose = 2;
+                    new PrefetchData().execute();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+
+
+    public void restore(View view) {
+        //prompt asking to download and install recovery
+        AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+        prompt.setMessage("Ok to download and install  stock recovery for device: " + device).setPositiveButton("Yes", stockprompt)
+                .setNegativeButton("No", stockprompt).show();
     }
 
     //prompt to reboot to recovery
@@ -96,24 +124,72 @@ public class RecoveryInstallerActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+           //no pre execute for now
         }
 
         @Override
-        protected Void doInBackground(Void... arg0) {
+        protected Void doInBackground(Void... arg0)
+        {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Downloading image",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
 
-            if(root_tools.fileExists(Environment.getExternalStorageDirectory() + "/cwm.img")){
-                Log.d("Recovery Install", "Cwm image found, deleting.");
-                String rm_recovery = "busybox rm " + working_dir_sh + "/cwm.img";
-                root_tools.execute(rm_recovery);
+                switch (choose)
+                {
+                    case 1:
+                        Log.d("Check Files", "case 1");
+                        //cwm
+                        if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/cwm.img")) {
+                            Log.d("Check Files", "cwm Image found");
+                            downloadFiles("http://pressy4pie.com/devices/" + device + "/cwm.img", working_dir + "/cwm.img");
+                        }
+                        else {
+                            Log.d("Check Files", "cwm not Image found");
+                            errormsg("cwm");
+                        }
+                        break;
+                    case 2:
+                        Log.d("Check Files", "case 2");
+                        //stock
+                        if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/stock.img")) {
+                            Log.d("Check Files", "stock Image found");
+                            downloadFiles("http://pressy4pie.com/devices/" + device + "/stock.img", working_dir + "/stock.img");
+                        }
+                        else errormsg("stock");
+                        break;
+                }
+                return null;
+         }
 
+        public void errormsg(String error) {
+    //this looks like crap too
+    runOnUiThread(new Runnable() {
+        public void run() {
+            Toast.makeText(getApplicationContext(), "That cannot be found on the server ",
+                    Toast.LENGTH_LONG).show();
+        }
+    });
+    Log.d("Check Files", error + "not found on the server for " + device);
+}
+
+
+        public boolean remote_file_exists(String URLName){
+            try {
+                HttpURLConnection.setFollowRedirects(false);
+                // note : you may also need
+                //        HttpURLConnection.setInstanceFollowRedirects(false)
+                HttpURLConnection con =
+                        (HttpURLConnection) new URL(URLName).openConnection();
+                con.setRequestMethod("HEAD");
+                return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
             }
-            else {
-                Log.d("Recovery Install", "Cwm image not found");
-                backup = true;
-
+            catch (Exception e) {
+                e.printStackTrace();
+                return false;
             }
-            downloadFiles("http://pressy4pie.com/devices/" + device + "/cwm.img", working_dir + "/cwm.img");
-            return null;
         }
 
         public void downloadFiles(String file2get, String filename){
@@ -173,19 +249,25 @@ public class RecoveryInstallerActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            String dd_backup = "dd if=/dev/block/platform/msm_sdcc.1/by-name/recovery of= " + working_dir_sh + "/backup.img";
-            String dd_install = "dd if="+ working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
-
-            if(backup) {
-                Log.d("backup?", "yes");
-                Log.d("DD", "backup: " +  dd_backup);
-                root_tools.execute(dd_backup);
+            //todo make this less shitty
+                //there is the potential of both files existing. which did the user select?
+                switch (choose){
+                    case 1:
+                        //cwm
+                        String dd_install = "dd if=" + working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
+                        Log.d("DD", "install: " + dd_install);
+                        root_tools.execute(dd_install);
+                        Log.d("DD", "Install appears to have completed!");
+                        break;
+                    case 2:
+                        //stock
+                        String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
+                        Log.d("DD", "install: " + dd_restore);
+                        root_tools.execute(dd_restore);
+                        Log.d("DD", "restore appears to have completed!");
+                        break;
+                }
             }
-
-            Log.d("backup?", "no");
-            Log.d("DD", "install: " + dd_install);
-            root_tools.execute(dd_install);
-            Log.d("DD", "Install appears to have completed!");
         }
 }
-}
+

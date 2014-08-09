@@ -16,7 +16,16 @@
         android:gravity="center"
         android:text="@string/hello_world"
         android:textSize="18sp"
-        android:id="@+id/text_top" />
+        android:id="@+id/text_top_support" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:gravity="center"
+        android:text="@string/not_supported"
+        android:textSize="18sp"
+        android:id="@+id/text_top_nosupport" />
 
     <Button
         android:id="@+id/info"
@@ -43,7 +52,7 @@
             android:text="@string/recovery" />
 
         <Button
-            android:id="@+id/btn_main_2"
+            android:id="@+id/btn_main_dump"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
             android:onClick="dump"
@@ -53,28 +62,28 @@
             android:id="@+id/btn_main_3"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:onClick="recoveryInstaller"
+            android:onClick="#"
             android:text="3" />
 
         <Button
             android:id="@+id/btn_main_4"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:onClick="recoveryInstaller"
+            android:onClick="#"
             android:text="4" />
 
         <Button
             android:id="@+id/btn_main_5"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:onClick="recoveryInstaller"
+            android:onClick="#"
             android:text="5" />
 
         <Button
             android:id="@+id/btn_main_6"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:onClick="recoveryInstaller"
+            android:onClick="#"
             android:text="6" />
 
 

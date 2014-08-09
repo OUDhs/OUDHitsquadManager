@@ -39,7 +39,7 @@
             android:id="@+id/btn_rec_installer_restore"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:onClick="recoveryInstaller"
+            android:onClick="restore"
             android:text="Restore Stock Recovery" />
 
         <Button

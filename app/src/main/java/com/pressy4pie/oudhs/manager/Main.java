@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,16 +15,65 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.Scanner;
 
 
 public class Main extends Activity {
     public String device = root_tools.DeviceName();
+    public final boolean is_in_devices()
+    {
+        String deviceFile = Environment.getExternalStorageDirectory() + "/devices.txt";
+        boolean is = false;
+        Scanner input = new Scanner (deviceFile);
+        while(input.hasNextLine()){
+            String lineFromFile = input.nextLine();
+            if(lineFromFile.contains(device)) {
+                is = true;
+            }
+        }
+        if (is = true){
+            return true;
+        }
+        else return false;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //determine what buttons to show, depending on if device is supported
+        TextView top_support = (TextView) findViewById(R.id.text_top_support);
+        TextView top_nosupport = (TextView) findViewById(R.id.text_top_nosupport);
+        top_nosupport.setVisibility(View.GONE);
+
+        Button recoveryButton, dumpbutton, three, four, five, six;
+        recoveryButton = (Button) findViewById(R.id.btn_main_recovery);
+        dumpbutton = (Button) findViewById(R.id.btn_main_dump);
+        //these are unused for now
+        three = (Button) findViewById(R.id.btn_main_3);
+        four = (Button) findViewById(R.id.btn_main_4);
+        five = (Button) findViewById(R.id.btn_main_5);
+        six = (Button) findViewById(R.id.btn_main_6);
+
+        //these are unused for now
+        three.setVisibility(View.GONE);
+        four.setVisibility(View.GONE);
+        five.setVisibility(View.GONE);
+        six.setVisibility(View.GONE);
+
+
+        if(!is_in_devices())
+        {
+            top_support.setVisibility(View.GONE);
+            top_nosupport.setVisibility(View.VISIBLE);
+            recoveryButton.setVisibility(View.GONE);
+        }
     }
 
     @Override

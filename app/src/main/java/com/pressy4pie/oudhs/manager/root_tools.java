@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -209,7 +210,23 @@ public class root_tools {
         return line;
     }
 
-
+    public boolean is_in_devices()
+    {
+        String device = root_tools.DeviceName();
+        String deviceFile = Environment.getExternalStorageDirectory() + "/devices.txt";
+        boolean is = false;
+        Scanner input = new Scanner (deviceFile);
+        while(input.hasNextLine()){
+            String lineFromFile = input.nextLine();
+            if(lineFromFile.contains(device)) {
+                is = true;
+            }
+        }
+        if (is = true){
+            return true;
+        }
+        else return false;
+    }
 }
 
 

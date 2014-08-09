@@ -23,7 +23,6 @@ import java.util.Scanner;
 
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
-    String md5File = Environment.getExternalStorageDirectory() + "/md5.txt";
     String deviceFile = Environment.getExternalStorageDirectory() + "/devices.txt";
 
     @Override
@@ -56,8 +55,6 @@ public class SplashScreen extends Activity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                //check to see if the devices and md5 text file exist
-                //if they do delete them
             }
 
             @Override
@@ -70,7 +67,6 @@ public class SplashScreen extends Activity {
                 Log.d("Device Check", "Checking Device: " + device);
                 if(is_in_devices()) {
                     Log.d("Device Check", device + " found in devices.txt, getting files...");
-                    downloadFiles("http://pressy4pie.com/devices/" + device + "/md5.txt", "md5.txt");
                 }
                 else {
                     Log.d("Device Check", device + " not found in devices.txt");
@@ -140,15 +136,8 @@ public class SplashScreen extends Activity {
             @Override
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
-                if(is_in_devices()) {
                     Intent i = new Intent(SplashScreen.this, Main.class);
                     startActivity(i);
-                }
-
-                else {
-                    Intent i = new Intent(SplashScreen.this, NoDevice.class);
-                    startActivity(i);
-                }
                 // close this activity
                 finish();
             }
