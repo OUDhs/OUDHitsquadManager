@@ -2,14 +2,19 @@ package com.pressy4pie.oudhs.manager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,12 +30,13 @@ import java.net.URL;
  */
 
 public class RecoveryInstallerActivity extends Activity {
+    private ProgressBar pbM;
+    private Handler mHandler = new Handler();
     public File sdCard = Environment.getExternalStorageDirectory();
     public String working_dir = sdCard + "/OudHSManager/downloads";
     //this is so dirty your parents will ground you for a week
     public String working_dir_sh = "/sdcard/OudHSManager/downloads";
     public String device = root_tools.DeviceName();
-
     //1 = cwm. 2 = stock
     public int choose;
 
@@ -42,8 +48,10 @@ public class RecoveryInstallerActivity extends Activity {
         File dir = new File (working_dir);
         dir.mkdirs();
         File file = new File(dir, "filename");
-
         Log.d("working dir", working_dir);
+
+        //Progress Bar
+        pbM = (ProgressBar) findViewById( R.id.pbDefault);
     }
 
     DialogInterface.OnClickListener recoveryprompt = new DialogInterface.OnClickListener() {
@@ -53,6 +61,7 @@ public class RecoveryInstallerActivity extends Activity {
                 case DialogInterface.BUTTON_POSITIVE:
                     Log.d("Recovery Install", "Starting download and install");
                     choose = 1;
+                    pbM.setVisibility(View.VISIBLE);
                     new PrefetchData().execute();
                     break;
 
@@ -78,6 +87,7 @@ public class RecoveryInstallerActivity extends Activity {
                 case DialogInterface.BUTTON_POSITIVE:
                     Log.d("Recovery Install", "Starting download and install");
                     choose = 2;
+                    pbM.setVisibility(View.VISIBLE);
                     new PrefetchData().execute();
                     break;
 
@@ -130,13 +140,6 @@ public class RecoveryInstallerActivity extends Activity {
         @Override
         protected Void doInBackground(Void... arg0)
         {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Downloading image",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-
                 switch (choose)
                 {
                     case 1:
@@ -147,8 +150,12 @@ public class RecoveryInstallerActivity extends Activity {
                             downloadFiles("http://pressy4pie.com/devices/" + device + "/cwm.img", working_dir + "/cwm.img");
                         }
                         else {
-                            Log.d("Check Files", "cwm not Image found");
-                            errormsg("cwm");
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "CWM Image cannot be found on the server ",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                         break;
                     case 2:
@@ -158,7 +165,15 @@ public class RecoveryInstallerActivity extends Activity {
                             Log.d("Check Files", "stock Image found");
                             downloadFiles("http://pressy4pie.com/devices/" + device + "/stock.img", working_dir + "/stock.img");
                         }
-                        else errormsg("stock");
+                        else {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Stock Image cannot be found on the server ",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
                         break;
                 }
                 return null;
@@ -166,13 +181,8 @@ public class RecoveryInstallerActivity extends Activity {
 
         public void errormsg(String error) {
     //this looks like crap too
-    runOnUiThread(new Runnable() {
-        public void run() {
-            Toast.makeText(getApplicationContext(), "That cannot be found on the server ",
-                    Toast.LENGTH_LONG).show();
-        }
-    });
-    Log.d("Check Files", error + "not found on the server for " + device);
+
+    Log.d("Check Files", error + " not found on the server for " + device);
 }
 
 
@@ -228,13 +238,17 @@ public class RecoveryInstallerActivity extends Activity {
                 int bufferLength = 0; //used to store a temporary size of the buffer
 
                 //now, read through the input buffer and write the contents to the file
-                Log.i("File Download", "Downloading file too: " + filename);
                 while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
                     //add the data in the buffer to the file in the file output stream (the file on the sd card
                     fileOutput.write(buffer, 0, bufferLength);
                     //add up the size so we know how much is downloaded
                     downloadedSize += bufferLength;
                     //updateProgress(downloadedSize, totalSize, filename);
+                    float percentage = ((float)downloadedSize / (float)totalSize) * 100;
+                    updateProgress(percentage);
+                    if((percentage % 10 == 0)) {
+                        Log.d("download", String.valueOf(percentage));
+                    }
                 }
                 Log.i("File Download", "Download of " + filename + " has completed");
                 //close the output stream when done
@@ -246,6 +260,14 @@ public class RecoveryInstallerActivity extends Activity {
             }
         }
 
+        void updateProgress(final float per){
+            mHandler.post(new Runnable() {
+                public void run() {
+                    pbM.setProgress((int)per);
+                }
+            });
+        }
+
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
@@ -254,19 +276,25 @@ public class RecoveryInstallerActivity extends Activity {
                 switch (choose){
                     case 1:
                         //cwm
-                        String dd_install = "dd if=" + working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
-                        Log.d("DD", "install: " + dd_install);
-                        root_tools.execute(dd_install);
-                        Log.d("DD", "Install appears to have completed!");
+                        if(root_tools.fileExists(working_dir_sh + "/cwm.img")) {
+                            String dd_install = "dd if=" + working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
+                            Log.d("DD", "install: " + dd_install);
+                            root_tools.execute(dd_install);
+                            Log.d("DD", "Install appears to have completed!");
+                        }
+
                         break;
                     case 2:
                         //stock
-                        String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
-                        Log.d("DD", "install: " + dd_restore);
-                        root_tools.execute(dd_restore);
-                        Log.d("DD", "restore appears to have completed!");
+                        if(root_tools.fileExists(working_dir_sh + "/stock.img")) {
+                            String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
+                            Log.d("DD", "install: " + dd_restore);
+                            root_tools.execute(dd_restore);
+                            Log.d("DD", "restore appears to have completed!");
+                        }
                         break;
                 }
+            pbM.setVisibility(View.INVISIBLE);
             }
         }
 }
