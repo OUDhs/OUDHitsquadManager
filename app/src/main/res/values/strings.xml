@@ -2,8 +2,16 @@
 <resources>
 
     <string name="app_name">OUDHS Manager</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Welcome to the Official Unloved Device Manager.</string>
     <string name="action_settings">Settings</string>
     <string name="splash_text">www.oudhitsquad.com</string>
-
+    <string name="no_device">Your device is not currently supported</string>
+    <string name="not_supported">Your device is not currently supported</string>
+    <string name="recovery">Recovery Options</string>
+    <string name="recovery_desc">Here you can install, uninstall and change your recovery.</string>
+    <string name="info">Developer Information</string>
+    <string name="rebooter">Reboot to Recovery</string>
+    <string name="info_main">App Developed by: PressY4Pie \n
+    CWM Developed by: koush \n
+    CWM Ported by: to many to count</string>
 </resources>

@@ -25,6 +25,10 @@ import java.net.URL;
  */
 
 public class RecoveryInstallerActivity extends Activity {
+    public File sdCard = Environment.getExternalStorageDirectory();
+    public String working_dir = sdCard + "/OudHSManager/downloads";
+    //this is so dirty your parents will ground you for a week
+    public String working_dir_sh = "/sdcard/OudHSManager/downloads";
     public boolean backup = false;
     public String device = root_tools.DeviceName();
 
@@ -32,6 +36,12 @@ public class RecoveryInstallerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recovery_installer);
+
+        File dir = new File (working_dir);
+        dir.mkdirs();
+        File file = new File(dir, "filename");
+
+        Log.d("working dir", working_dir);
     }
 
     DialogInterface.OnClickListener recoveryprompt = new DialogInterface.OnClickListener() {
@@ -58,6 +68,30 @@ public class RecoveryInstallerActivity extends Activity {
                 .setNegativeButton("No", recoveryprompt).show();
     }
 
+    //prompt to reboot to recovery
+    DialogInterface.OnClickListener rebootPrompt = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    root_tools.execute("reboot recovery");
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+
+    public void reboot(View view) {
+        //prompt asking to download and install recovery
+        AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+        prompt.setMessage("Reboot to Recovery?").setPositiveButton("Yes", rebootPrompt)
+                .setNegativeButton("No", rebootPrompt).show();
+    }
+
+
     private class PrefetchData extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -69,14 +103,16 @@ public class RecoveryInstallerActivity extends Activity {
 
             if(root_tools.fileExists(Environment.getExternalStorageDirectory() + "/cwm.img")){
                 Log.d("Recovery Install", "Cwm image found, deleting.");
-                root_tools.execute("busybox rm " + Environment.getExternalStorageDirectory() + "/cwm.img");
+                String rm_recovery = "busybox rm " + working_dir_sh + "/cwm.img";
+                root_tools.execute(rm_recovery);
 
             }
             else {
                 Log.d("Recovery Install", "Cwm image not found");
                 backup = true;
-                downloadFiles("http://pressy4pie.com/devices/" + device + "/cwm.img", "cwm.img");
+
             }
+            downloadFiles("http://pressy4pie.com/devices/" + device + "/cwm.img", working_dir + "/cwm.img");
             return null;
         }
 
@@ -96,13 +132,9 @@ public class RecoveryInstallerActivity extends Activity {
                 //and connect!
                 urlConnection.connect();
 
-                //set the path where we want to save the file
-                //in this case, going to save it on the root directory of the
-                //sd card.
-                File SDCardDir = Environment.getExternalStorageDirectory();
                 //create a new file, specifying the path, and the filename
                 //which we want to save the file as.
-                File file = new File(SDCardDir + "/" + filename);
+                File file = new File(filename);
 
                 //this will be used to write the downloaded data into the file we created
                 FileOutputStream fileOutput = new FileOutputStream(file);
@@ -120,7 +152,7 @@ public class RecoveryInstallerActivity extends Activity {
                 int bufferLength = 0; //used to store a temporary size of the buffer
 
                 //now, read through the input buffer and write the contents to the file
-                Log.i("File Download", "Downloading " + filename);
+                Log.i("File Download", "Downloading file too: " + filename);
                 while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
                     //add the data in the buffer to the file in the file output stream (the file on the sd card
                     fileOutput.write(buffer, 0, bufferLength);
@@ -141,11 +173,19 @@ public class RecoveryInstallerActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            String dd_backup = "dd if=/dev/block/platform/msm_sdcc.1/by-name/recovery of= " + working_dir_sh + "/backup.img";
+            String dd_install = "dd if="+ working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
+
             if(backup) {
-                root_tools.execute("dd if=/dev/block/platform/msm_sdcc.1/by-name/recovery of= " + Environment.getExternalStorageDirectory() + "/backup.img");
+                Log.d("backup?", "yes");
+                Log.d("DD", "backup: " +  dd_backup);
+                root_tools.execute(dd_backup);
             }
 
-            root_tools.execute("dd if= "+ Environment.getExternalStorageDirectory() + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery");
+            Log.d("backup?", "no");
+            Log.d("DD", "install: " + dd_install);
+            root_tools.execute(dd_install);
+            Log.d("DD", "Install appears to have completed!");
         }
 }
 }
