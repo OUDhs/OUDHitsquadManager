@@ -98,14 +98,12 @@ public class SplashScreen extends Activity {
 
                 try {
                     JSONArray jArr = new JSONArray(get);
-                    /*
-                    for loop to cycle through the file
                     for (int i=0; i < jArr.length(); i++) {
                         Log.i("Device List", jArr.getString(i));
                         //giving it a string for debug purposes
                         jsonData = jArr.getString(i);
                     }
-                    */
+
 
                     if(jArr.toString().contains("\"device\":\""+device+"\"")){
                         check = 1;

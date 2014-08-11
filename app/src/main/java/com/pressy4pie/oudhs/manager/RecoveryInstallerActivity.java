@@ -17,10 +17,22 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,6 +40,9 @@ import java.net.URL;
 /**
  * Created by pressy4pie on 8/9/2014.
  */
+
+
+//TODO this will be completely revised :(
 
 public class RecoveryInstallerActivity extends Activity {
     private ProgressBar pbM;
@@ -140,14 +155,21 @@ public class RecoveryInstallerActivity extends Activity {
         @Override
         protected Void doInBackground(Void... arg0)
         {
+            //first we must parse the json file to see what the recovery this need to be done in a more
+            //effiecent way to be honest.
+
+            String RecoveryInstallLocation = installLocation();
+            String RecoveryImageLocation =  imageName();
+            String StockImageLocation = StockName();
+
                 switch (choose)
                 {
                     case 1:
                         Log.d("Check Files", "case 1");
                         //cwm
-                        if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/cwm.img")) {
+                        if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/" + RecoveryImageLocation)) {
                             Log.d("Check Files", "cwm Image found");
-                            downloadFiles("http://pressy4pie.com/devices/" + device + "/cwm.img", working_dir + "/cwm.img");
+                            downloadFiles("http://pressy4pie.com/devices/" + device +  "/" + RecoveryImageLocation, working_dir + "/AfterMarket.img");
                         }
                         else {
                             runOnUiThread(new Runnable() {
@@ -161,9 +183,10 @@ public class RecoveryInstallerActivity extends Activity {
                     case 2:
                         Log.d("Check Files", "case 2");
                         //stock
-                        if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/stock.img")) {
+                        Log.d("Check Files", "Checking for " + "http://pressy4pie.com/devices/" + device + "/" +  StockImageLocation);
+                        if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/" +  StockImageLocation)) {
                             Log.d("Check Files", "stock Image found");
-                            downloadFiles("http://pressy4pie.com/devices/" + device + "/stock.img", working_dir + "/stock.img");
+                            downloadFiles("http://pressy4pie.com/devices/" + device + "/" +  StockImageLocation, working_dir + "/stock.img");
                         }
                         else {
                             runOnUiThread(new Runnable() {
@@ -179,12 +202,74 @@ public class RecoveryInstallerActivity extends Activity {
                 return null;
          }
 
-        public void errormsg(String error) {
-    //this looks like crap too
+        //get the json file
+        public String getJson(){
+            StringBuilder builder = new StringBuilder();
+            HttpClient client = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet("http://pressy4pie.com/devices/" + device + "/device.json");
+            try {
+                HttpResponse response = client.execute(httpGet);
+                StatusLine statusLine = response.getStatusLine();
+                int statusCode = statusLine.getStatusCode();
+                if (statusCode == 200) {
+                    HttpEntity entity = response.getEntity();
+                    InputStream content = entity.getContent();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
+                    }
+                } else {
+                    Log.e("Json get", "Failed to download file");
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return builder.toString();
+        }
 
-    Log.d("Check Files", error + " not found on the server for " + device);
-}
+        //TODO make it so i dont have to download the file three times lol
 
+        String installLocation(){
+            String JsonFile = getJson();
+            String FileName = null;
+            try {
+                JSONObject jObj = new JSONObject(JsonFile);
+                FileName = jObj.getString("RecoveryImageName");
+                Log.d("ImageName", FileName);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return FileName;
+        }
+
+        String imageName(){
+            String JsonFile = getJson();
+            String Location = null;
+            try {
+                JSONObject jObj = new JSONObject(JsonFile);
+                Location = jObj.getString("RecoveryPartition");
+                Log.d("ImageName", Location);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return Location;
+        }
+
+        String StockName(){
+            String JsonFile = getJson();
+            String StockLocation = null;
+            try {
+                JSONObject jObj = new JSONObject(JsonFile);
+                StockLocation = jObj.getString("StockImageName");
+                Log.d("ImageName", StockLocation);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return StockLocation;
+        }
 
         public boolean remote_file_exists(String URLName){
             try {
@@ -280,7 +365,7 @@ public class RecoveryInstallerActivity extends Activity {
                         if(root_tools.fileExists(working_dir_sh + "/cwm.img")) {
                             String dd_install = "dd if=" + working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
                             Log.d("DD", "install: " + dd_install);
-                            root_tools.execute(dd_install);
+                           // root_tools.execute(dd_install);
                             Log.d("DD", "Install appears to have completed!");
                         }
 
@@ -290,7 +375,7 @@ public class RecoveryInstallerActivity extends Activity {
                         if(root_tools.fileExists(working_dir_sh + "/stock.img")) {
                             String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
                             Log.d("DD", "install: " + dd_restore);
-                            root_tools.execute(dd_restore);
+                           // root_tools.execute(dd_restore);
                             Log.d("DD", "restore appears to have completed!");
                         }
                         break;
