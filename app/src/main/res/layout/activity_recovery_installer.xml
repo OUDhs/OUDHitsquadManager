@@ -46,7 +46,7 @@
             android:id="@+id/btn_rec_installer_custom"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:onClick="recoveryInstaller"
+            android:onClick="customInstaller"
             android:text="Install a Custom Image" />
 
         <Button

@@ -52,6 +52,8 @@ public class RecoveryInstallerActivity extends Activity {
     //this is so dirty your parents will ground you for a week
     public String working_dir_sh = "/sdcard/OudHSManager/downloads";
     public String device = root_tools.DeviceName();
+    public String RecoveryInstallLocation = null;
+    public String selected = null;
     //1 = cwm. 2 = stock
     public int choose;
 
@@ -137,6 +139,55 @@ public class RecoveryInstallerActivity extends Activity {
         }
     };
 
+    public void customInstaller(View view) {
+        Intent i = new Intent(this,file_browserActivity.class);
+        startActivityForResult(i, 1);
+    }
+
+    DialogInterface.OnClickListener customprompt = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    Log.d("Recovery Install", "Custom Image Flash Started!");
+                    if(root_tools.fileExists("/dev/block/platform/msm_sdcc.1/by-name/recovery")) {
+                        String dd_custom_install = "dd if=" + selected + " of= /dev/block/msm_sdcc.1/by-name/recovery";
+                        Log.d("DD", "Custom Image Install: " + dd_custom_install);
+                        root_tools.execute(dd_custom_install);
+                        Log.d("DD", "Custom install appears to have completed!");
+                    }
+
+                    else if(!root_tools.fileExists("/dev/block/platform/msm_sdcc.1/by-name/recovery")){
+                        Log.d("DD", "Custom Image Install: " + "This only works on msm devices");
+                    }
+
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                String result=data.getStringExtra("FILENAME");
+                selected = Environment.getExternalStorageDirectory().toString() + "/" + result;
+                Toast.makeText(this, "You selected: " + selected, Toast.LENGTH_SHORT).show();
+
+                //prompt asking to download and install recovery
+                AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                prompt.setMessage("Ok to write: " + "\"" + selected + "\"" + " to " + device).setPositiveButton("Yes", customprompt)
+                        .setNegativeButton("No", customprompt).show();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
+
     public void reboot(View view) {
         //prompt asking to download and install recovery
         AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
@@ -158,7 +209,7 @@ public class RecoveryInstallerActivity extends Activity {
             //first we must parse the json file to see what the recovery this need to be done in a more
             //effiecent way to be honest.
 
-            String RecoveryInstallLocation = installLocation();
+            RecoveryInstallLocation = installLocation();
             String RecoveryImageLocation =  imageName();
             String StockImageLocation = StockName();
 
@@ -168,11 +219,13 @@ public class RecoveryInstallerActivity extends Activity {
                         Log.d("Check Files", "case 1");
                         //cwm
                         if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/" + RecoveryImageLocation)) {
-                            Log.d("Check Files", "cwm Image found");
+                            Log.d("Check Files", "Recovery Image found");
                             downloadFiles("http://pressy4pie.com/devices/" + device +  "/" + RecoveryImageLocation, working_dir + "/AfterMarket.img");
                         }
                         else {
+                            Log.d("Check Files", "Recovery Image not found");
                             runOnUiThread(new Runnable() {
+                                //toast for showing a failure
                                 public void run() {
                                     Toast.makeText(getApplicationContext(), "CWM Image cannot be found on the server ",
                                             Toast.LENGTH_LONG).show();
@@ -185,10 +238,13 @@ public class RecoveryInstallerActivity extends Activity {
                         //stock
                         Log.d("Check Files", "Checking for " + "http://pressy4pie.com/devices/" + device + "/" +  StockImageLocation);
                         if (remote_file_exists("http://pressy4pie.com/devices/" + device + "/" +  StockImageLocation)) {
+                            Log.d("Check Files", "Stock Recovery Image found");
                             Log.d("Check Files", "stock Image found");
                             downloadFiles("http://pressy4pie.com/devices/" + device + "/" +  StockImageLocation, working_dir + "/stock.img");
                         }
                         else {
+                            Log.d("Check Files", "Stock Recovery Image not found");
+                            //toast for showing a failure
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     Toast.makeText(getApplicationContext(), "Stock Image cannot be found on the server ",
@@ -234,19 +290,6 @@ public class RecoveryInstallerActivity extends Activity {
 
         String installLocation(){
             String JsonFile = getJson();
-            String FileName = null;
-            try {
-                JSONObject jObj = new JSONObject(JsonFile);
-                FileName = jObj.getString("RecoveryImageName");
-                Log.d("ImageName", FileName);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return FileName;
-        }
-
-        String imageName(){
-            String JsonFile = getJson();
             String Location = null;
             try {
                 JSONObject jObj = new JSONObject(JsonFile);
@@ -256,6 +299,19 @@ public class RecoveryInstallerActivity extends Activity {
                 e.printStackTrace();
             }
             return Location;
+        }
+
+        String imageName(){
+            String JsonFile = getJson();
+            String FileName = null;
+            try {
+                JSONObject jObj = new JSONObject(JsonFile);
+                FileName = jObj.getString("RecoveryImageName");
+                Log.d("ImageName", FileName);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return FileName;
         }
 
         String StockName(){
@@ -360,26 +416,35 @@ public class RecoveryInstallerActivity extends Activity {
             //todo also add loki support
                 //there is the potential of both files existing. which did the user select?
                 switch (choose){
+                    //switch choose again to see what the user originally chose
                     case 1:
                         //cwm
-                        if(root_tools.fileExists(working_dir_sh + "/cwm.img")) {
-                            String dd_install = "dd if=" + working_dir_sh + "/cwm.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
+                        if(root_tools.fileExists(working_dir_sh + "/AfterMarket.img")) {
+                            String dd_install = "dd if=" + working_dir_sh + "/AfterMarket.img of=" + RecoveryInstallLocation;
                             Log.d("DD", "install: " + dd_install);
-                           // root_tools.execute(dd_install);
+                            //this is the actual install
+                            root_tools.execute(dd_install);
                             Log.d("DD", "Install appears to have completed!");
+                        }
+                        else {
+                            Log.d("DD", "Something went wrong with install");
                         }
 
                         break;
                     case 2:
                         //stock
                         if(root_tools.fileExists(working_dir_sh + "/stock.img")) {
-                            String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=/dev/block/platform/msm_sdcc.1/by-name/recovery";
-                            Log.d("DD", "install: " + dd_restore);
-                           // root_tools.execute(dd_restore);
+                            String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=" + RecoveryInstallLocation;
+                            Log.d("DD", "Restore: " + dd_restore);
+                            root_tools.execute(dd_restore);
                             Log.d("DD", "restore appears to have completed!");
+                        }
+                        else{
+                            Log.d("DD", "Something went wrong with restore");
                         }
                         break;
                 }
+            //make the progress bar invisible
             pbM.setVisibility(View.INVISIBLE);
             }
         }
