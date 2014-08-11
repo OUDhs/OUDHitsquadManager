@@ -272,6 +272,7 @@ public class RecoveryInstallerActivity extends Activity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             //todo make this less shitty
+            //todo also add loki support
                 //there is the potential of both files existing. which did the user select?
                 switch (choose){
                     case 1:

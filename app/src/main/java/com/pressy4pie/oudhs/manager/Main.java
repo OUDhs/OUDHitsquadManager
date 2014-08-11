@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,28 +25,16 @@ import java.util.Scanner;
 
 public class Main extends Activity {
     public String device = root_tools.DeviceName();
-    public final boolean is_in_devices()
-    {
-        String deviceFile = Environment.getExternalStorageDirectory() + "/devices.txt";
-        boolean is = false;
-        Scanner input = new Scanner (deviceFile);
-        while(input.hasNextLine()){
-            String lineFromFile = input.nextLine();
-            if(lineFromFile.contains(device)) {
-                is = true;
-            }
-        }
-        if (is = true){
-            return true;
-        }
-        else return false;
-    }
-
+    /*
+    TODO: Parse device info from a json stored server side about supported devices..
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Bundle extras = getIntent().getExtras();
 
         //determine what buttons to show, depending on if device is supported
         TextView top_support = (TextView) findViewById(R.id.text_top_support);
@@ -73,6 +62,24 @@ public class Main extends Activity {
             top_support.setVisibility(View.GONE);
             top_nosupport.setVisibility(View.VISIBLE);
             recoveryButton.setVisibility(View.GONE);
+        }
+    }
+
+    //check to see if it is in devices
+    public final boolean is_in_devices()
+    {
+        //grab the int from SplashScreen
+        Bundle extras = getIntent().getExtras();
+        int deviceChecker = extras.getInt("deviceCheck");
+
+        //Check and return values
+        if (deviceChecker == 1){
+            Log.d("Device Check", device + " Is a supported Device.");
+            return true;
+        }
+        else {
+            Log.d("Device Check", device + " Is not a supported Device.");
+            return false;
         }
     }
 
