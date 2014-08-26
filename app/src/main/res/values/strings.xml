@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">OUDHS Manager</string>
-    <string name="hello_world">Welcome to the Official Unloved Device Manager.</string>
+    <string name="hello_world">Welcome to the Official Unloved Device Manager. This app can do all sorts of fun stuff, this text is just filler because im a bad app developer.</string>
     <string name="action_settings">Settings</string>
     <string name="splash_text">Fetching Some files...</string>
     <string name="not_supported">Your device is not currently supported. You will have access to some options. Join #oudhitsquad on freenode to request support for a device.</string>

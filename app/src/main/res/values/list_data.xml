@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="list_items">
+        <item>Recovery Options</item>
+        <item>Image Dumping</item>
+        <item>Contact Us</item>
+        <item>test</item>
+        <item>test</item>
+        <item>test</item>
+
+    </string-array>
+
+</resources>
