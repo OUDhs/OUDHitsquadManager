@@ -5,4 +5,14 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style
+        name="Theme.Light"
+        parent="android:Theme.Holo.Light.DarkActionBar" >
+    </style>
+
+    <style
+        name="Theme.Dark"
+        parent="android:Theme.Holo" >
+    </style>
+
 </resources>

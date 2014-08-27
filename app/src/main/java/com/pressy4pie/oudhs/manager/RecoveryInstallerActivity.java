@@ -14,10 +14,13 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -48,7 +51,7 @@ import java.util.List;
 
 //TODO this will be completely revised :(
 
-public class RecoveryInstallerActivity extends ListActivity {
+public class RecoveryInstallerActivity extends Activity {
     private ProgressBar pbM;
     private Handler mHandler = new Handler();
     public File sdCard = Environment.getExternalStorageDirectory();
@@ -60,51 +63,59 @@ public class RecoveryInstallerActivity extends ListActivity {
     public String selected = null;
     //1 = cwm. 2 = stock
     public int choose;
+    private WelcomeAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recovery_installer);
 
-        String[] items = getResources().getStringArray(R.array.list_items_recovery);
-        this.setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_label, items));
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mAdapter = new WelcomeAdapter(this);
+        mAdapter.add(new WelcomeItem(R.string.Install, R.string.Install_description));
+        mAdapter.add(new WelcomeItem(R.string.Restore, R.string.Restore_description));
+        mAdapter.add(new WelcomeItem(R.string.Custom, R.string.Custom_description));
+        mAdapter.add(new WelcomeItem(R.string.nothing, R.string.nothing_description));
+        mAdapter.add(new WelcomeItem(R.string.Reboot, R.string.Reboot_description));
 
-            //should i be using a switch case or?...
-            //it works fine anyway.
-            switch (position){
-                case 0:
-                    //prompt asking to download and install recovery
-                    AlertDialog.Builder prompt1 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
-                    prompt1.setMessage("Ok to download and install recovery for device: " + device).setPositiveButton("Yes", recoveryprompt)
-                            .setNegativeButton("No", recoveryprompt).show();
-                    break;
-                case 1:
-                    //prompt asking to download and install recovery
-                    AlertDialog.Builder prompt2 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
-                    prompt2.setMessage("Ok to download and install  stock recovery for device: " + device).setPositiveButton("Yes", stockprompt)
-                            .setNegativeButton("No", stockprompt).show();
-                    break;
-                case 2:
-                    //start the file browser activity
-                    Intent i = new Intent(getApplicationContext(),file_browserActivity.class);
-                    startActivityForResult(i, 1);
-                    break;
-                case 3:
-                    //nothing
-                    Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
-                    break;
-                case 4:
-                    //prompt asking to download and install recovery
-                    AlertDialog.Builder prompt5 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
-                    prompt5.setMessage("Reboot to Recovery?").setPositiveButton("Yes", rebootPrompt)
-                            .setNegativeButton("No", rebootPrompt).show();
-                    break;
+        ListView lv = (ListView) findViewById(R.id.recovery_list);
+        lv.setAdapter(mAdapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        //prompt asking to download and install recovery
+                        AlertDialog.Builder prompt1 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                        prompt1.setMessage("Ok to download and install recovery for device: " + device).setPositiveButton("Yes", recoveryprompt)
+                                .setNegativeButton("No", recoveryprompt).show();
+                        break;
+                    case 1:
+                        //prompt asking to download and install recovery
+                        AlertDialog.Builder prompt2 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                        prompt2.setMessage("Ok to download and install  stock recovery for device: " + device).setPositiveButton("Yes", stockprompt)
+                                .setNegativeButton("No", stockprompt).show();
+                        break;
+                    case 2:
+                        //start the file browser activity
+                        Intent i = new Intent(getApplicationContext(),file_browserActivity.class);
+                        startActivityForResult(i, 1);
+                        break;
+                    case 3:
+                        //nothing
+                        Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 4:
+                        //prompt asking to download and install recovery
+                        AlertDialog.Builder prompt5 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                        prompt5.setMessage("Reboot to Recovery?").setPositiveButton("Yes", rebootPrompt)
+                                .setNegativeButton("No", rebootPrompt).show();
+                        break;
+                }
+
             }
-        }
-    });
+        });
+
         File dir = new File (working_dir);
         dir.mkdirs();
         File file = new File(dir, "filename");
@@ -112,8 +123,6 @@ public class RecoveryInstallerActivity extends ListActivity {
 
         //Progress Bar
         pbM = (ProgressBar) findViewById( R.id.pbDefault);
-
-
     }
 
     DialogInterface.OnClickListener recoveryprompt = new DialogInterface.OnClickListener() {
@@ -465,5 +474,36 @@ public class RecoveryInstallerActivity extends ListActivity {
             pbM.setVisibility(View.INVISIBLE);
             }
         }
+
+    class WelcomeAdapter extends ArrayAdapter<WelcomeItem> {
+        public WelcomeAdapter(Context context) {
+            super(context, R.layout.list_item_welcome, android.R.id.text1);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            WelcomeItem item = getItem(position);
+
+            TextView description = (TextView) view.findViewById(android.R.id.text2);
+            description.setText(item.description);
+            return view;
+        }
+    }
+
+    class WelcomeItem {
+        public final String title;
+        public final String description;
+
+        protected WelcomeItem(int titleResId, int descriptionResId) {
+            this.title = getString(titleResId);
+            this.description = getString(descriptionResId);
+        }
+
+        @Override
+        public String toString() {
+            return title;
+        }
+    }
 }
 

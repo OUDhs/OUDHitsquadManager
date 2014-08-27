@@ -2,15 +2,62 @@
 <resources>
 
     <string name="app_name">OUDHS Manager</string>
-    <string name="hello_world">Welcome to the Official Unloved Device Manager. This app can do all sorts of fun stuff, this text is just filler because im a bad app developer.</string>
+    <string name="hello_world">Welcome to the Official Unloved Device Manager.</string>
     <string name="action_settings">Settings</string>
     <string name="splash_text">Fetching Some files...</string>
     <string name="not_supported">Your device is not currently supported. You will have access to some options. Join #oudhitsquad on freenode to request support for a device.</string>
-    <string name="recovery">Recovery Options</string>
-    <string name="recovery_desc">Here you can install, uninstall and change your recovery.</string>
-    <string name="info">Developer Information</string>
+
     <string name="rebooter">Reboot to Recovery</string>
+
     <string name="info_main">App Developed by: PressY4Pie \n
     CWM Developed by: koush \n
     CWM Ported by: to many to count</string>
+
+
+
+
+    <!--
+    Strings for the welcome menu
+    -->
+    <string name="RecoveryOptions"> Recovery Options</string>
+    <string name="RecoveryOptions_description"> Here you can change, install and restore recovery images. </string>
+
+    <string name="DumpOptions"> Image Dump Options</string>
+    <string name="DumpOptions_description"> Here you can get dumps of images to send to devs. </string>
+
+    <string name="ContactOptions"> Contact Us</string>
+    <string name="ContactOptions_description"> Here you can Get our contact info and join irc. </string>
+
+    <string name="OtherOptions"> Other Options</string>
+    <string name="OtherOptions_description"> Here you can do various other stuff. </string>
+
+    <string name="LogOptions"> Log Options</string>
+    <string name="LogOptions_description"> Here you can view logs. </string>
+
+    <string name="Info"> App Info</string>
+    <string name="Info_description"> Here you can see the credits of this wonderful app. </string>
+
+    <!--
+    Strings for the recovery Menu
+    -->
+
+    <string name="recovery_header"> These are your Recovery options. Be very careful. We\'ve tried to keep things as safe as possible
+    but there is always room for something to go very wrong.</string>
+
+    <string name="Install">Download and Install</string>
+    <string name="Install_description"> Here you can download and install the latest uploaded image. </string>
+
+    <string name="Restore">Restore Stock Recovery </string>
+    <string name="Restore_description"> Here you can download and restore a stock image. (Not supported on all devices yet). </string>
+
+    <string name="Custom"> Install a Custom Image</string>
+    <string name="Custom_description"> Here you can browse for a custom .IMG or .LOK file to install. (Be very careful!)</string>
+
+    <string name="nothing"> filler</string>
+    <string name="nothing_description"> Here you can add a thing here so it doesn\'t look so dumb. </string>
+
+    <string name="Reboot"> Reboot to Recovery </string>
+    <string name="Reboot_description"> This is needed for some devices that can\'t use hardware keys. </string>
+
+
 </resources>

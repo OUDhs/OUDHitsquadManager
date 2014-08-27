@@ -1,36 +1,45 @@
 package com.pressy4pie.oudhs.manager;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Main extends ListActivity {
+public class Main extends Activity {
     public String device = root_tools.DeviceName();
+    private WelcomeAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Bundle extras = getIntent().getExtras();
 
-        String[] items = getResources().getStringArray(R.array.list_items_main);
-        this.setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_label, items));
+        mAdapter = new WelcomeAdapter(this);
+        mAdapter.add(new WelcomeItem(R.string.RecoveryOptions, R.string.RecoveryOptions_description));
+        mAdapter.add(new WelcomeItem(R.string.DumpOptions, R.string.DumpOptions_description));
+        mAdapter.add(new WelcomeItem(R.string.ContactOptions, R.string.ContactOptions_description));
+        mAdapter.add(new WelcomeItem(R.string.OtherOptions, R.string.OtherOptions_description));
+        mAdapter.add(new WelcomeItem(R.string.LogOptions, R.string.LogOptions_description));
+        mAdapter.add(new WelcomeItem(R.string.Info, R.string.Info_description));
 
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ListView lv = (ListView) findViewById(R.id.welcome_list);
+        lv.setAdapter(mAdapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                //should i be using a switch case or?...
-                //it works fine anyway.
                 switch (position){
                     case 0:
                         //recovery options
@@ -57,25 +66,14 @@ public class Main extends ListActivity {
                         Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
                         break;
                     case 5:
-                        //nothing
-                        Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        //info
+                        info();
+
                         break;
                 }
+
             }
         });
-
-
-
-        //determine what buttons to show, depending on if device is supported
-        TextView top_support = (TextView) findViewById(R.id.text_top_support);
-        TextView top_nosupport = (TextView) findViewById(R.id.text_top_nosupport);
-        top_nosupport.setVisibility(View.GONE);
-
-        if(!is_in_devices())
-        {
-            top_support.setVisibility(View.GONE);
-            top_nosupport.setVisibility(View.VISIBLE);
-        }
     }
 
     //check to see if it is in devices
@@ -97,7 +95,7 @@ public class Main extends ListActivity {
     }
 
     //display a cute little credits thing
-    public void info(View view) {
+    public void info() {
         AlertDialog.Builder about = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         about.setTitle("Developer Info");
@@ -108,5 +106,36 @@ public class Main extends ListActivity {
             }
         });
         about.show();
+    }
+
+    class WelcomeAdapter extends ArrayAdapter<WelcomeItem> {
+        public WelcomeAdapter(Context context) {
+            super(context, R.layout.list_item_welcome, android.R.id.text1);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            WelcomeItem item = getItem(position);
+
+            TextView description = (TextView) view.findViewById(android.R.id.text2);
+            description.setText(item.description);
+            return view;
+        }
+    }
+
+    class WelcomeItem {
+        public final String title;
+        public final String description;
+
+        protected WelcomeItem(int titleResId, int descriptionResId) {
+            this.title = getString(titleResId);
+            this.description = getString(descriptionResId);
+        }
+
+        @Override
+        public String toString() {
+            return title;
+        }
     }
 }
