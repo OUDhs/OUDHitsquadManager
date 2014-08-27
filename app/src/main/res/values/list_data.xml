@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="list_items">
+    <string-array name="list_items_main">
         <item>Recovery Options</item>
         <item>Image Dumping</item>
         <item>Contact Us</item>
         <item>test</item>
         <item>test</item>
         <item>test</item>
+    </string-array>
 
+    <string-array name="list_items_recovery">
+        <item>Download and Install Custom Recovery</item>
+        <item>Download and Restore Stock Recovery</item>
+        <item>Install a Custom .img or .lok file</item>
+        <item>test</item>
+        <item>Reboot to Recovery</item>
     </string-array>
 
 </resources>

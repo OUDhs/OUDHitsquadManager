@@ -2,6 +2,7 @@ package com.pressy4pie.oudhs.manager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -36,6 +39,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by pressy4pie on 8/9/2014.
@@ -44,7 +48,7 @@ import java.net.URL;
 
 //TODO this will be completely revised :(
 
-public class RecoveryInstallerActivity extends Activity {
+public class RecoveryInstallerActivity extends ListActivity {
     private ProgressBar pbM;
     private Handler mHandler = new Handler();
     public File sdCard = Environment.getExternalStorageDirectory();
@@ -62,6 +66,45 @@ public class RecoveryInstallerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recovery_installer);
 
+        String[] items = getResources().getStringArray(R.array.list_items_recovery);
+        this.setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_label, items));
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            //should i be using a switch case or?...
+            //it works fine anyway.
+            switch (position){
+                case 0:
+                    //prompt asking to download and install recovery
+                    AlertDialog.Builder prompt1 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                    prompt1.setMessage("Ok to download and install recovery for device: " + device).setPositiveButton("Yes", recoveryprompt)
+                            .setNegativeButton("No", recoveryprompt).show();
+                    break;
+                case 1:
+                    //prompt asking to download and install recovery
+                    AlertDialog.Builder prompt2 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                    prompt2.setMessage("Ok to download and install  stock recovery for device: " + device).setPositiveButton("Yes", stockprompt)
+                            .setNegativeButton("No", stockprompt).show();
+                    break;
+                case 2:
+                    //start the file browser activity
+                    Intent i = new Intent(getApplicationContext(),file_browserActivity.class);
+                    startActivityForResult(i, 1);
+                    break;
+                case 3:
+                    //nothing
+                    Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                    break;
+                case 4:
+                    //prompt asking to download and install recovery
+                    AlertDialog.Builder prompt5 = new AlertDialog.Builder(RecoveryInstallerActivity.this);
+                    prompt5.setMessage("Reboot to Recovery?").setPositiveButton("Yes", rebootPrompt)
+                            .setNegativeButton("No", rebootPrompt).show();
+                    break;
+            }
+        }
+    });
         File dir = new File (working_dir);
         dir.mkdirs();
         File file = new File(dir, "filename");
@@ -69,6 +112,8 @@ public class RecoveryInstallerActivity extends Activity {
 
         //Progress Bar
         pbM = (ProgressBar) findViewById( R.id.pbDefault);
+
+
     }
 
     DialogInterface.OnClickListener recoveryprompt = new DialogInterface.OnClickListener() {
@@ -89,14 +134,6 @@ public class RecoveryInstallerActivity extends Activity {
         }
     };
 
-
-    public void install(View view) {
-        //prompt asking to download and install recovery
-        AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
-        prompt.setMessage("Ok to download and install recovery for device: " + device).setPositiveButton("Yes", recoveryprompt)
-                .setNegativeButton("No", recoveryprompt).show();
-    }
-
     DialogInterface.OnClickListener stockprompt = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -115,14 +152,6 @@ public class RecoveryInstallerActivity extends Activity {
         }
     };
 
-
-    public void restore(View view) {
-        //prompt asking to download and install recovery
-        AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
-        prompt.setMessage("Ok to download and install  stock recovery for device: " + device).setPositiveButton("Yes", stockprompt)
-                .setNegativeButton("No", stockprompt).show();
-    }
-
     //prompt to reboot to recovery
     DialogInterface.OnClickListener rebootPrompt = new DialogInterface.OnClickListener() {
         @Override
@@ -139,10 +168,6 @@ public class RecoveryInstallerActivity extends Activity {
         }
     };
 
-    public void customInstaller(View view) {
-        Intent i = new Intent(this,file_browserActivity.class);
-        startActivityForResult(i, 1);
-    }
 
     DialogInterface.OnClickListener customprompt = new DialogInterface.OnClickListener() {
         @Override
@@ -175,7 +200,7 @@ public class RecoveryInstallerActivity extends Activity {
             if(resultCode == RESULT_OK){
                 String result=data.getStringExtra("FILENAME");
                 selected = Environment.getExternalStorageDirectory().toString() + "/" + result;
-                Toast.makeText(this, "You selected: " + selected, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "You selected: " + selected, Toast.LENGTH_SHORT).show();
 
                 //prompt asking to download and install recovery
                 AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
@@ -187,14 +212,6 @@ public class RecoveryInstallerActivity extends Activity {
             }
         }
     }//onActivityResult
-
-    public void reboot(View view) {
-        //prompt asking to download and install recovery
-        AlertDialog.Builder prompt = new AlertDialog.Builder(RecoveryInstallerActivity.this);
-        prompt.setMessage("Reboot to Recovery?").setPositiveButton("Yes", rebootPrompt)
-                .setNegativeButton("No", rebootPrompt).show();
-    }
-
 
     private class PrefetchData extends AsyncTask<Void, Void, Void> {
         @Override
@@ -423,7 +440,7 @@ public class RecoveryInstallerActivity extends Activity {
                             String dd_install = "dd if=" + working_dir_sh + "/AfterMarket.img of=" + RecoveryInstallLocation;
                             Log.d("DD", "install: " + dd_install);
                             //this is the actual install
-                            root_tools.execute(dd_install);
+                            //root_tools.execute(dd_install);
                             Log.d("DD", "Install appears to have completed!");
                         }
                         else {
@@ -436,7 +453,7 @@ public class RecoveryInstallerActivity extends Activity {
                         if(root_tools.fileExists(working_dir_sh + "/stock.img")) {
                             String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=" + RecoveryInstallLocation;
                             Log.d("DD", "Restore: " + dd_restore);
-                            root_tools.execute(dd_restore);
+                            //root_tools.execute(dd_restore);
                             Log.d("DD", "restore appears to have completed!");
                         }
                         else{

@@ -22,14 +22,12 @@ public class Main extends ListActivity {
         setContentView(R.layout.activity_main);
         Bundle extras = getIntent().getExtras();
 
-        String[] items = getResources().getStringArray(R.array.list_items);
+        String[] items = getResources().getStringArray(R.array.list_items_main);
         this.setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_label, items));
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Log.d("list view", String.valueOf(position + id));
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 //should i be using a switch case or?...
                 //it works fine anyway.
@@ -40,7 +38,7 @@ public class Main extends ListActivity {
                             Intent recovery = new Intent(getApplicationContext(), RecoveryInstallerActivity.class);
                             startActivity(recovery);
                         }
-                        else Toast.makeText(getApplicationContext(), "Your device is unsupported.", Toast.LENGTH_LONG).show();
+                        else Toast.makeText(getApplicationContext(), "Your device is unsupported or could not reach Pressy4pie.com", Toast.LENGTH_LONG).show();
                         break;
                     case 1:
                         //image dumping options
