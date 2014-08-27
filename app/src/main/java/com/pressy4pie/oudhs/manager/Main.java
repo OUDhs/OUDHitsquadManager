@@ -1,53 +1,38 @@
 package com.pressy4pie.oudhs.manager;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Scanner;
-
-
 public class Main extends ListActivity {
     public String device = root_tools.DeviceName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Bundle extras = getIntent().getExtras();
 
-
-
-        //String[] mainList = getResources().getStringArray(R.array.adobe_products);
-
-
-        setListAdapter(ArrayAdapter.createFromResource(getApplicationContext(),
-                R.array.list_items, R.layout.list_item));
+        String[] items = getResources().getStringArray(R.array.list_items);
+        this.setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_label, items));
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Log.d("list view", String.valueOf(position + id));
+
+                //should i be using a switch case or?...
+                //it works fine anyway.
                 switch (position){
                     case 0:
                         //recovery options
@@ -118,7 +103,6 @@ public class Main extends ListActivity {
         AlertDialog.Builder about = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         about.setTitle("Developer Info");
-        //about.setIcon(R.drawable.apple);
         about.setView(inflater.inflate(R.layout.activity_info, null));
         about.setNegativeButton("Close", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -127,19 +111,4 @@ public class Main extends ListActivity {
         });
         about.show();
     }
-
-    //probably going to change this around a bit
-    public void recoveryInstaller(View view){
-        //goto the recovery installer intent
-        Intent intent = new Intent(this, RecoveryInstallerActivity.class);
-        startActivity(intent);
-    }
-
-    //this doesnt exist yet. get over it.
-    public void dump(View view){
-        //goto the recovery installer intent
-        Intent intent = new Intent(this, dump.class);
-        startActivity(intent);
-    }
-
 }
