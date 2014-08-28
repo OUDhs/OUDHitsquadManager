@@ -58,12 +58,14 @@ public class Main extends Activity {
                         Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
                         break;
                     case 3:
-                        //nothing
+                        root_tools.logger("testme");
                         Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
                         break;
                     case 4:
                         //nothing
                         Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        Intent test = new Intent(getApplicationContext(), LogActivity.class);
+                        startActivity(test);
                         break;
                     case 5:
                         //info
@@ -86,10 +88,12 @@ public class Main extends Activity {
         //Check and return values
         if (deviceChecker == 1){
             Log.d("Device Check", device + " Is a supported Device.");
+            root_tools.logger(device + " Is a supported Device.");
             return true;
         }
         else {
             Log.d("Device Check", device + " Is not a supported Device.");
+            root_tools.logger(device + " Is not a supported Device.");
             return false;
         }
     }

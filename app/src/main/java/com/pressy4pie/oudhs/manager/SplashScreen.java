@@ -36,13 +36,33 @@ import java.util.Scanner;
 
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
+    public String working_dir = "/sdcard/OudHSManager/";
+    private File mFileErrorLog = new File(working_dir + "/log.log");
+    private File mFileErrorLogOld = new File(working_dir + "/log.old.old");
     public int check = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        if(root_tools.fileExists(String.valueOf(mFileErrorLog))){
+            String oldcmd = "mv " + String.valueOf(mFileErrorLog) + " " + String.valueOf(mFileErrorLogOld);
+            root_tools.logger(oldcmd);
+            root_tools.executeAsSH(oldcmd);
+            root_tools.logger("---STARTING NEW LOG---");
+        }
+        else
+        {
+            root_tools.executeAsSH("touch " + String.valueOf(mFileErrorLog));
+            root_tools.logger("---STARTING FRESH LOG---");
+        }
+
+        //print device name to log
         Log.d("Device Name", "Device is: " + device);
+        root_tools.logger("Device is: " + device);
+
+
 
         //start the fun stuff here.
         new PrefetchData().execute();
@@ -55,10 +75,7 @@ public class SplashScreen extends Activity {
 
             @Override
             protected Void doInBackground(Void... arg0) {
-                //print device name to log.
-                Log.d("Device Check", "Checking Device: " + device);
                 parseJson();
-
                 return null;
             }
 
@@ -80,7 +97,8 @@ public class SplashScreen extends Activity {
                             builder.append(line);
                         }
                     } else {
-                        Log.e("Json get", "Failed to download file");
+                        Log.e("Json get", "Failed to download Json File");
+                        root_tools.logger("Failed to download Json File");
                     }
                 } catch (ClientProtocolException e) {
                     e.printStackTrace();
@@ -100,6 +118,8 @@ public class SplashScreen extends Activity {
                     JSONArray jArr = new JSONArray(get);
                     for (int i=0; i < jArr.length(); i++) {
                         Log.i("Device List", jArr.getString(i));
+                        root_tools.logger(jArr.getString(i));
+
                         //giving it a string for debug purposes
                         jsonData = jArr.getString(i);
                     }

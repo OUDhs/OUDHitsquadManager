@@ -30,7 +30,6 @@ Class with useful tools for a root environment
 */
 
 public class root_tools {
-
     public static String DeviceName() {
     return readProp("ro.product.device");
     }
@@ -226,6 +225,12 @@ public class root_tools {
             return true;
         }
         else return false;
+    }
+
+    public static void logger(String logme){
+        String working_dir = "/sdcard/OudHSManager/";
+        String logfile = working_dir + "/log.log";
+        root_tools.executeAsSH("echo " + logme + " >> " + logfile);
     }
 }
 

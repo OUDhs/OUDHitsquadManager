@@ -234,7 +234,6 @@ public class RecoveryInstallerActivity extends Activity {
         {
             //first we must parse the json file to see what the recovery this need to be done in a more
             //effiecent way to be honest.
-
             RecoveryInstallLocation = installLocation();
             String RecoveryImageLocation =  imageName();
             String StockImageLocation = StockName();
@@ -417,7 +416,9 @@ public class RecoveryInstallerActivity extends Activity {
                         Log.d("download", String.valueOf(percentage));
                     }
                 }
-                Log.i("File Download", "Download of " + filename + " has completed");
+                Log.d("File Download", "Download of " + filename + " has completed");
+                root_tools.logger("Download of " + filename + " has completed");
+
                 //close the output stream when done
                 fileOutput.close();
             } catch (MalformedURLException e) {
@@ -448,12 +449,17 @@ public class RecoveryInstallerActivity extends Activity {
                         if(root_tools.fileExists(working_dir_sh + "/AfterMarket.img")) {
                             String dd_install = "dd if=" + working_dir_sh + "/AfterMarket.img of=" + RecoveryInstallLocation;
                             Log.d("DD", "install: " + dd_install);
+                            root_tools.logger("install: " + dd_install);
+
                             //this is the actual install
+                            //it is commented so i dont acidentally write over my recovery
                             //root_tools.execute(dd_install);
                             Log.d("DD", "Install appears to have completed!");
+                            root_tools.logger("Install appears to have completed!");
                         }
                         else {
                             Log.d("DD", "Something went wrong with install");
+                            root_tools.logger("Something went wrong with install");
                         }
 
                         break;
@@ -462,11 +468,14 @@ public class RecoveryInstallerActivity extends Activity {
                         if(root_tools.fileExists(working_dir_sh + "/stock.img")) {
                             String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=" + RecoveryInstallLocation;
                             Log.d("DD", "Restore: " + dd_restore);
+                            root_tools.logger("restore appears to have completed!");
                             //root_tools.execute(dd_restore);
                             Log.d("DD", "restore appears to have completed!");
+                            root_tools.logger("restore appears to have completed!");
                         }
                         else{
                             Log.d("DD", "Something went wrong with restore");
+                            root_tools.logger("Something went wrong with restore");
                         }
                         break;
                 }
