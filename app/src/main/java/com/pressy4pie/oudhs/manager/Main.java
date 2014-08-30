@@ -6,6 +6,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,26 +52,29 @@ public class Main extends Activity {
                         break;
                     case 1:
                         //image dumping options
-                        Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        Intent dump = new Intent(getApplicationContext(), ImageDumpingActivity.class);
+                        startActivity(dump);
                         break;
                     case 2:
                         //contact
-                        Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        Uri uri = Uri.parse("http://www.pressy4pie.com/devices/mobilesite");
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
                         break;
                     case 3:
-                        root_tools.logger("testme");
-                        Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        //other options
+                        //Intent login = new Intent(getApplicationContext(), LoginActivity.class);
+                        //startActivity(login);
+                        //Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
                         break;
                     case 4:
-                        //nothing
-                        Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        //log
                         Intent test = new Intent(getApplicationContext(), LogActivity.class);
                         startActivity(test);
                         break;
                     case 5:
                         //info
                         info();
-
                         break;
                 }
 

@@ -48,9 +48,6 @@ import java.util.List;
  * Created by pressy4pie on 8/9/2014.
  */
 
-
-//TODO this will be completely revised :(
-
 public class RecoveryInstallerActivity extends Activity {
     private ProgressBar pbM;
     private Handler mHandler = new Handler();
@@ -453,7 +450,7 @@ public class RecoveryInstallerActivity extends Activity {
 
                             //this is the actual install
                             //it is commented so i dont acidentally write over my recovery
-                            //root_tools.execute(dd_install);
+                            root_tools.execute(dd_install);
                             Log.d("DD", "Install appears to have completed!");
                             root_tools.logger("Install appears to have completed!");
                         }
@@ -469,7 +466,7 @@ public class RecoveryInstallerActivity extends Activity {
                             String dd_restore = "dd if=" + working_dir_sh + "/stock.img of=" + RecoveryInstallLocation;
                             Log.d("DD", "Restore: " + dd_restore);
                             root_tools.logger("restore appears to have completed!");
-                            //root_tools.execute(dd_restore);
+                            root_tools.execute(dd_restore);
                             Log.d("DD", "restore appears to have completed!");
                             root_tools.logger("restore appears to have completed!");
                         }
