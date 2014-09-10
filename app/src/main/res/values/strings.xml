@@ -65,6 +65,8 @@
     <string name="dump_boot_desc">Here you can get a backup of your current boot image.</string>
     <string name="dump_buildprop">Get Build.prop</string>
     <string name="dump_buildprop_desc">Here you can view some of the important info that a developer may need</string>
+    <string name="dump_custom"> Dump a Custom Image</string>
+    <string name="dump_custom_desc">Here you can type a custom location to image.</string>
 
 
 </resources>

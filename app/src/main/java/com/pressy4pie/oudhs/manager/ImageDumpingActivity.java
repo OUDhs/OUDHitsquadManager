@@ -3,8 +3,10 @@ package com.pressy4pie.oudhs.manager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +24,15 @@ import java.io.File;
 
 public class ImageDumpingActivity extends Activity {
     private WelcomeAdapter mAdapter;
+    public String working_dir_sh = "/sdcard/OudHSManager/downloads";
+
+    //recovery images & stuff
+    public String recovery_location = "/dev/block/msm_sdcc.1/by-name/recovery";
+    public String recovery_backup = "dd if=" + recovery_location + " of=" + working_dir_sh + "/recovery_backup.img";
+
+    //boot images
+    public String boot_location = "/dev/block/msm_sdcc.1/by-name/boot";
+    public String boot_backup = "dd if=" + boot_location + " of=" + working_dir_sh + "/boot_backup.img";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +42,7 @@ public class ImageDumpingActivity extends Activity {
         mAdapter = new WelcomeAdapter(this);
         mAdapter.add(new WelcomeItem(R.string.dump_recovery, R.string.dump_recovery_desc));
         mAdapter.add(new WelcomeItem(R.string.dump_boot, R.string.dump_boot_desc));
+        mAdapter.add(new WelcomeItem(R.string.dump_custom, R.string.dump_custom_desc));
         mAdapter.add(new WelcomeItem(R.string.dump_buildprop, R.string.dump_buildprop_desc));
 
         ListView lv = (ListView) findViewById(R.id.dump_list);
@@ -41,26 +53,40 @@ public class ImageDumpingActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        //recovery image
+                        //prompt for recovery image
+                        AlertDialog.Builder prompt1 = new AlertDialog.Builder(ImageDumpingActivity.this);
+                        //stylized in html cause i suck
+                        prompt1.setMessage(Html.fromHtml
+                                ("This is going to read: " + "<br>" +
+                                "<b>" +recovery_location + "</b>" + " and create an image at: " +
+                                "<br>" + "<b>" +
+                                working_dir_sh + "/recovery_backup.img" + "</b>"))
 
-
-
+                                .setPositiveButton("Yes", RecoverybackupPrompt)
+                                .setNegativeButton("No", RecoverybackupPrompt).show();
                         break;
+
                     case 1:
                         //boot image
+                        AlertDialog.Builder prompt2 = new AlertDialog.Builder(ImageDumpingActivity.this);
+                        prompt2.setMessage(Html.fromHtml
+                                ("This is going to read: " + "<br>" +
+                                        "<b>" +boot_location + "</b>" + " and create an image at: " +
+                                        "<br>" + "<b>" +
+                                        working_dir_sh + "/boot_backup.img" + "</b>"))
 
-
+                                .setPositiveButton("Yes", BootbackupPrompt)
+                                .setNegativeButton("No", BootbackupPrompt).show();
                         break;
+
                     case 2:
-                        //build.prop stuff
-
-
+                        //custom
+                        Toast.makeText(getApplicationContext(), "THIS ISN'T READY YET, SORRY", Toast.LENGTH_LONG).show();
                         break;
+
                     case 3:
-
-                        break;
-                    case 4:
-
+                        //build.prop stuff
+                        Toast.makeText(getApplicationContext(), "THIS ISN'T READY YET, SORRY", Toast.LENGTH_LONG).show();
                         break;
                 }
 
@@ -70,6 +96,39 @@ public class ImageDumpingActivity extends Activity {
 
 
     }
+
+    DialogInterface.OnClickListener RecoverybackupPrompt = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                   //if the user agrees
+                    //Toast.makeText(getApplicationContext(), "Executing: " + recovery_backup, Toast.LENGTH_LONG).show();
+                    root_tools.execute(recovery_backup);
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+
+    DialogInterface.OnClickListener BootbackupPrompt = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    //if the user agrees
+                    root_tools.execute(boot_backup);
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
 
 
     @Override
@@ -122,6 +181,4 @@ public class ImageDumpingActivity extends Activity {
             return title;
         }
     }
-
-
 }
