@@ -46,6 +46,16 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        //replacing the "touch blah blah" with java because we arent a bunch of baboons
+        try {
+            mFileErrorLog.mkdirs();
+            mFileErrorLog.createNewFile();
+            mFileErrorLogOld.createNewFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if(root_tools.fileExists(String.valueOf(mFileErrorLog))){
             String oldcmd = "mv " + String.valueOf(mFileErrorLog) + " " + String.valueOf(mFileErrorLogOld);
             root_tools.logger(oldcmd);
@@ -54,7 +64,7 @@ public class SplashScreen extends Activity {
         }
         else
         {
-            root_tools.executeAsSH("touch " + String.valueOf(mFileErrorLog));
+            //root_tools.executeAsSH("touch " + String.valueOf(mFileErrorLog));
             root_tools.logger("---STARTING FRESH LOG---");
         }
 

@@ -229,7 +229,8 @@ public class root_tools {
 
     public static void logger(String logme){
         String working_dir = "/sdcard/OudHSManager/";
-        String logfile = working_dir + "/log.log";
+        String logfile = working_dir + "log.log";
+        //need to chang this into java at some point
         root_tools.executeAsSH("echo " + logme + " >> " + logfile);
     }
 }
