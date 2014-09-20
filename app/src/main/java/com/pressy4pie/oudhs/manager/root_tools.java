@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,9 +31,15 @@ Class with useful tools for a root environment
 */
 
 public class root_tools {
+    public static String working_dir = "/sdcard/OudHSManager/";
+
+    /*
+     * gets the device name, from props
+     */
     public static String DeviceName() {
     return readProp("ro.product.device");
     }
+
     /*
 	 * executes a command as super user in an interactive shell
 	 */
@@ -228,10 +235,15 @@ public class root_tools {
     }
 
     public static void logger(String logme){
-        String working_dir = "/sdcard/OudHSManager/";
-        String logfile = working_dir + "log.log";
-        //need to chang this into java at some point
-        root_tools.executeAsSH("echo " + logme + " >> " + logfile);
+        String logfile = working_dir + "oud.log";
+        try {
+            FileWriter fw = new FileWriter(logfile, true); //the true will append the new data
+            fw.write(logme + " \n");//appends the string to the file
+            fw.close();
+        }
+        catch(IOException ioe){
+            Log.i("Logger", logme + "could not be written to: " + logfile + " for some reason");
+        }
     }
 }
 

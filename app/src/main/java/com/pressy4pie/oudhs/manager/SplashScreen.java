@@ -37,8 +37,9 @@ import java.util.Scanner;
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
     public String working_dir = "/sdcard/OudHSManager/";
-    private File mFileErrorLog = new File(working_dir + "/log.log");
-    private File mFileErrorLogOld = new File(working_dir + "/log.old.old");
+    private File working = new File(working_dir);
+    private File mFileErrorLog = new File(working_dir + "/oud.log");
+    private File mFileErrorLogOld = new File(working_dir + "/oud.old");
     public int check = 0;
 
     @Override
@@ -48,7 +49,11 @@ public class SplashScreen extends Activity {
 
         //replacing the "touch blah blah" with java because we arent a bunch of baboons
         try {
-            mFileErrorLog.mkdirs();
+            if(!working.exists()) {
+                Log.i("Log", "OudHSManager was removed. Recreating");
+                working.mkdir();
+            }
+            //mFileErrorLog.mkdirs();
             mFileErrorLog.createNewFile();
             mFileErrorLogOld.createNewFile();
 
