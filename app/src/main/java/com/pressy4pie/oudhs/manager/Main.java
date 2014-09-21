@@ -63,9 +63,8 @@ public class Main extends Activity {
                         break;
                     case 3:
                         //other options
-                        //Intent login = new Intent(getApplicationContext(), LoginActivity.class);
-                        //startActivity(login);
-                        //Toast.makeText(getApplicationContext(), "This is not ready yet.", Toast.LENGTH_SHORT).show();
+                        Intent other = new Intent(getApplicationContext(), OtherActivity.class);
+                        startActivity(other);
                         break;
                     case 4:
                         //log

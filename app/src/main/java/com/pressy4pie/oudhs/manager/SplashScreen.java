@@ -37,14 +37,29 @@ import java.util.Scanner;
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
     public String working_dir = "/sdcard/OudHSManager/";
-    private File mFileErrorLog = new File(working_dir + "/log.log");
-    private File mFileErrorLogOld = new File(working_dir + "/log.old.old");
+    private File working = new File(working_dir);
+    private File mFileErrorLog = new File(working_dir + "/oud.log");
+    private File mFileErrorLogOld = new File(working_dir + "/oud.old");
     public int check = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        //replacing the "touch blah blah" with java because we arent a bunch of baboons
+        try {
+            if(!working.exists()) {
+                Log.i("Log", "OudHSManager was removed. Recreating");
+                working.mkdir();
+            }
+            //mFileErrorLog.mkdirs();
+            mFileErrorLog.createNewFile();
+            mFileErrorLogOld.createNewFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if(root_tools.fileExists(String.valueOf(mFileErrorLog))){
             String oldcmd = "mv " + String.valueOf(mFileErrorLog) + " " + String.valueOf(mFileErrorLogOld);
@@ -54,7 +69,7 @@ public class SplashScreen extends Activity {
         }
         else
         {
-            root_tools.executeAsSH("touch " + String.valueOf(mFileErrorLog));
+            //root_tools.executeAsSH("touch " + String.valueOf(mFileErrorLog));
             root_tools.logger("---STARTING FRESH LOG---");
         }
 
