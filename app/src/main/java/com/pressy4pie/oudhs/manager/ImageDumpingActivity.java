@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -92,7 +94,43 @@ public class ImageDumpingActivity extends Activity {
 
                         case 2:
                             //custom
-                            Toast.makeText(getApplicationContext(), "THIS ISN'T READY YET, SORRY", Toast.LENGTH_LONG).show();
+                            //this is basically a DD wrapper
+
+                            AlertDialog.Builder alert = new AlertDialog.Builder(ImageDumpingActivity.this);
+
+                            alert.setTitle("Type A Custom Image Location");
+                            alert.setMessage("This shouldn't Cause any harm to your device, but use caution anyway. if you try to dump a huge partition or something big it will take a while.");
+
+                            // Set an EditText view to get user input
+                            final EditText input = new EditText(getApplicationContext());
+                            alert.setView(input);
+                            input.setTextColor(Color.BLACK);
+
+                            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    String value = String.valueOf(input.getText());
+                                    // Do something with value!
+                                    root_tools.logger(value);
+                                    if (!root_tools.fileExists(value)){
+                                        Toast.makeText(getApplicationContext(), value + " does not appear to exist, sorry", Toast.LENGTH_LONG).show();
+                                    }
+                                    else {
+                                        Toast.makeText(getApplicationContext(), "This could take a while...", Toast.LENGTH_LONG).show();
+                                        String CustomDumpCmd = "dd if=" + value + " of=" + working_dir_sh + "/custom.img";
+                                        root_tools.execute(CustomDumpCmd);
+                                        Toast.makeText(getApplicationContext(), "DONE", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+
+                            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    // Canceled.
+                                }
+                            });
+
+                            alert.show();
+
                             break;
 
                         case 3:
