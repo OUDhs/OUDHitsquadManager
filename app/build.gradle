@@ -8,8 +8,8 @@ android {
         applicationId "com.pressy4pie.oudhs.manager"
         minSdkVersion 15
         targetSdkVersion 20
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "2.1.3"
     }
     buildTypes {
         release {

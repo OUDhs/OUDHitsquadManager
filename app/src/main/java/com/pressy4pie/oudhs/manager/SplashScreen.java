@@ -36,7 +36,7 @@ import java.util.Scanner;
 
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
-    public String working_dir = "/sdcard/OudHSManager/";
+    public String working_dir = Environment.getExternalStorageDirectory() + "OudHSManager/";
     private File working = new File(working_dir);
     private File mFileErrorLog = new File(working_dir + "/oud.log");
     private File mFileErrorLogOld = new File(working_dir + "/oud.old");

@@ -33,7 +33,7 @@ Class with useful tools for a root environment
 */
 
 public class root_tools {
-    public static String working_dir = "/sdcard/OudHSManager/";
+    public static String working_dir = Environment.getExternalStorageDirectory() + "OudHSManager/";
 
     /*
      * gets the device name, from props

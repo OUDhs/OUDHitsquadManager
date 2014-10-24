@@ -54,7 +54,7 @@ public class RecoveryInstallerActivity extends Activity {
     public File sdCard = Environment.getExternalStorageDirectory();
     public String working_dir = sdCard + "/OudHSManager/downloads";
     //this is so dirty your parents will ground you for a week
-    public String working_dir_sh = "/sdcard/OudHSManager/downloads";
+    public String working_dir_sh = Environment.getExternalStorageDirectory() + "OudHSManager/doanloads";
     public String device = root_tools.DeviceName();
     public String RecoveryInstallLocation = null;
     public String selected = null;

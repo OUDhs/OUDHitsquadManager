@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,7 +25,7 @@ import java.io.IOException;
 
 public class ImageDumpingActivity extends Activity {
     private WelcomeAdapter mAdapter;
-    public String working_dir_sh = "/sdcard/OudHSManager";
+    public String working_dir_sh = Environment.getExternalStorageDirectory() + "OudHSManager/";
     public String hardware = detect_location();
 
     @Override
