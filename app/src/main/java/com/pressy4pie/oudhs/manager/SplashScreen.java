@@ -36,7 +36,7 @@ import java.util.Scanner;
 
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
-    public String working_dir = "/sdcard/OudHSManager/";
+    public String working_dir = Environment.getExternalStorageDirectory() + "OudHSManager/";
     private File working = new File(working_dir);
     private File mFileErrorLog = new File(working_dir + "/oud.log");
     private File mFileErrorLogOld = new File(working_dir + "/oud.old");
@@ -76,8 +76,6 @@ public class SplashScreen extends Activity {
         //print device name to log
         Log.d("Device Name", "Device is: " + device);
         root_tools.logger("Device is: " + device);
-
-
 
         //start the fun stuff here.
         new PrefetchData().execute();
@@ -131,15 +129,13 @@ public class SplashScreen extends Activity {
 
                 try {
                     JSONArray jArr = new JSONArray(get);
+                    /*
+                    we dont need to print the device list anymore its getting annoying l o l
                     for (int i=0; i < jArr.length(); i++) {
                         Log.i("Device List", jArr.getString(i));
                         root_tools.logger(jArr.getString(i));
-
-                        //giving it a string for debug purposes
-                        jsonData = jArr.getString(i);
                     }
-
-
+                    */
                     if(jArr.toString().contains("\"device\":\""+device+"\"")){
                         check = 1;
                     }

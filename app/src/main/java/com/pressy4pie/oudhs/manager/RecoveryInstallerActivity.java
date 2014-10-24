@@ -54,18 +54,40 @@ public class RecoveryInstallerActivity extends Activity {
     public File sdCard = Environment.getExternalStorageDirectory();
     public String working_dir = sdCard + "/OudHSManager/downloads";
     //this is so dirty your parents will ground you for a week
-    public String working_dir_sh = "/sdcard/OudHSManager/downloads";
+    public String working_dir_sh = Environment.getExternalStorageDirectory() + "OudHSManager/doanloads";
     public String device = root_tools.DeviceName();
     public String RecoveryInstallLocation = null;
     public String selected = null;
     //1 = cwm. 2 = stock
     public int choose;
     private WelcomeAdapter mAdapter;
+    private boolean multibootCheck = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recovery_installer);
+
+        multibootCheck = root_tools.isPackageInstalled("com.tassadar.multirommgr", this);
+        root_tools.logger("MultiRom installed?: " + String.valueOf(multibootCheck));
+        if(multibootCheck == true){
+           final AlertDialog multibootDialog = new AlertDialog.Builder(this)
+                    .setTitle("WARNING")
+                    .setMessage("I've Found the app MultiRom Manager to be installed. If you install recovery from this menu, it will break the functionality of your multiboot..")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setNegativeButton("Go back", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            RecoveryInstallerActivity.this.finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+
 
         mAdapter = new WelcomeAdapter(this);
         mAdapter.add(new WelcomeItem(R.string.Install, R.string.Install_description));
@@ -113,6 +135,7 @@ public class RecoveryInstallerActivity extends Activity {
             }
         });
 
+        //make sure the directories exist to work with
         File dir = new File (working_dir);
         dir.mkdirs();
         File file = new File(dir, "filename");

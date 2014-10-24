@@ -2,6 +2,7 @@ package com.pressy4pie.oudhs.manager;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.view.View;
 
 
 public class OtherActivity extends Activity {
+    public String working_dir_sh = Environment.getExternalStorageDirectory() + "OudHSManager/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +41,8 @@ public class OtherActivity extends Activity {
     public void ClearData(View view){
         //todo: give this an alert, make it prettier, take it off the main thread, etc
         //this empties the dir on the sdcard
-        Log.i("SDCARD", "All data in /sdcard/OudHSManager will be deleted");
-        root_tools.logger("All data in /sdcard/OudHSManager deleted");
-        root_tools.execute("rm -rf /sdcard/OudHSManager");
+        Log.i("SDCARD", "All data in  \" + working_dir_sh + \" Will be deleted");
+        root_tools.logger("All data in  " + working_dir_sh + " Will be deleted");
+        root_tools.execute("rm -rf  " + working_dir_sh);
     }
 }

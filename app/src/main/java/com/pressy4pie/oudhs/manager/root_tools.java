@@ -1,5 +1,7 @@
 package com.pressy4pie.oudhs.manager;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.util.Log;
 
@@ -31,7 +33,7 @@ Class with useful tools for a root environment
 */
 
 public class root_tools {
-    public static String working_dir = "/sdcard/OudHSManager/";
+    public static String working_dir = Environment.getExternalStorageDirectory() + "OudHSManager/";
 
     /*
      * gets the device name, from props
@@ -245,6 +247,17 @@ public class root_tools {
             Log.i("Logger", logme + "could not be written to: " + logfile + " for some reason");
         }
     }
+
+    public static boolean isPackageInstalled(String packagename, Context context) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
 }
 
 

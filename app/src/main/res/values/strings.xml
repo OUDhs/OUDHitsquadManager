@@ -9,6 +9,7 @@
     <string name="info_main">App Developed by: PressY4Pie \n
     CWM Developed by: koush \n
     CWM Ported by: to many to count</string>
+    <string name="title_activity_other">Other Stuff</string>
 
     <!-- Strings for the welcome menu -->
     <string name="RecoveryOptions"> Recovery Options</string>
@@ -59,15 +60,6 @@
 
     <!-- Dumping -->
     <string name="dump_header">Here you can make images of some of the important partitions on your device and send them to developers to help get support for your device.</string>
-    <string name="dump_recovery">Make Recovery Image</string>
-    <string name="dump_recovery_desc">Here you can get a backup of your current recovery image.</string>
-    <string name="dump_boot">Make Boot Image</string>
-    <string name="dump_boot_desc">Here you can get a backup of your current boot image.</string>
-    <string name="dump_buildprop">Get Build.prop</string>
-    <string name="dump_buildprop_desc">Here you can view some of the important info that a developer may need</string>
-    <string name="dump_custom"> Dump a Custom Image</string>
-    <string name="dump_custom_desc">Here you can type a custom location to image.</string>
-    <string name="title_activity_other">Other Stuff</string>
 
     <!--Other Menu-->
     <string name="other_button">Empty the OUDHS Manager SD Card Directory</string>
