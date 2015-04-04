@@ -28,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class LogActivity extends Activity {
-    public String working_dir = Environment.getExternalStorageDirectory() + "OudHSManager/";
+    public String working_dir = Environment.getExternalStorageDirectory() + "/OudHSManager/";
     public File mFileErrorLog= new File(working_dir + "/oud.log");
     private File mFileErrorLogOld = new File(working_dir + "/oud.old");
     private static final int MAX_LOG_SIZE = 2*1024*1024; // 2 MB

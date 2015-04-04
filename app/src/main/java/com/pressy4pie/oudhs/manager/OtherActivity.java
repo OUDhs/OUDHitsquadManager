@@ -10,7 +10,7 @@ import android.view.View;
 
 
 public class OtherActivity extends Activity {
-    public String working_dir_sh = Environment.getExternalStorageDirectory() + "OudHSManager/";
+    public String working_dir_sh = Environment.getExternalStorageDirectory() + "/OudHSManager/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

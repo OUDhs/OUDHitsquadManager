@@ -36,10 +36,9 @@ import java.util.Scanner;
 
 public class SplashScreen extends Activity {
     String device = root_tools.DeviceName();
-    public String working_dir = Environment.getExternalStorageDirectory() + "OudHSManager/";
+    public String working_dir = Environment.getExternalStorageDirectory() + "/OudHSManager/";
     private File working = new File(working_dir);
     private File mFileErrorLog = new File(working_dir + "/oud.log");
-    private File mFileErrorLogOld = new File(working_dir + "/oud.old");
     public int check = 0;
 
     @Override
@@ -47,29 +46,25 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        //replacing the "touch blah blah" with java because we arent a bunch of baboons
-        try {
-            if(!working.exists()) {
+        if(mFileErrorLog.exists()){ //if the log is here...
+            root_tools.logger("---STARTING NEW LOG---");
+        }
+
+        else //we didnt find the log files
+        {
+            if(!working.exists()) { ///make sure the dir is there
                 Log.i("Log", "OudHSManager was removed. Recreating");
                 working.mkdir();
             }
-            //mFileErrorLog.mkdirs();
-            mFileErrorLog.createNewFile();
-            mFileErrorLogOld.createNewFile();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            try {
+                if(!mFileErrorLog.exists()) { //if our log files dont exist create them
+                    mFileErrorLog.createNewFile();
+                }
 
-        if(root_tools.fileExists(String.valueOf(mFileErrorLog))){
-            String oldcmd = "mv " + String.valueOf(mFileErrorLog) + " " + String.valueOf(mFileErrorLogOld);
-            root_tools.logger(oldcmd);
-            root_tools.executeAsSH(oldcmd);
-            root_tools.logger("---STARTING NEW LOG---");
-        }
-        else
-        {
-            //root_tools.executeAsSH("touch " + String.valueOf(mFileErrorLog));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             root_tools.logger("---STARTING FRESH LOG---");
         }
 
@@ -79,6 +74,7 @@ public class SplashScreen extends Activity {
 
         //start the fun stuff here.
         new PrefetchData().execute();
+
     }
         private class PrefetchData extends AsyncTask<Void, Void, Void> {
             @Override
